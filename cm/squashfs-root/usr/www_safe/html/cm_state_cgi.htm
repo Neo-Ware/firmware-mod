@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC
+"-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Touchstone Registration Status</title>
+	<meta http-equiv="Pragma" content="no-cache">
+    <link rel="stylesheet" href="/arris_style.css">
+</head>
+
+<body>
+<div class="wrapper">
+
+	<div class="header">
+	<div class="header_text">
+		<h1>Registration Status</h1>
+	</div>
+	</div>
+
+	<div id="navbar">
+	<ul>
+	<?ARRIS_MENU>
+	</ul>
+	</div>
+	
+	<div class="main_body">
+	<p>
+	<!-- INSERT ARRIS PAGE CONTENT HERE -->
+	<b>CM State:</b><?CM_STATE><br>
+	
+	<table border="1" width="770">
+	<tbody>
+			  <tr valign="top">
+				 <td width="490">Docsis-Downstream Scanning</td>
+				 <td align="center"><?DOC_DS_SCAN></td>
+			  </tr>
+			  <tr valign="top">
+				 <td width="490">Docsis-Downstream Ranging</td>
+				 <td align="center"><?DOC_DS_RNG></td>
+			  </tr>
+			  <tr valign="top">
+				 <td width="490">Docsis-Upstream Ranging</td>
+				 <td align="center"><?DOC_US_RNG></td>
+			  </tr>
+			  <tr valign="top">
+				 <td width="490">Docsis-DHCP</td>
+				 <td align="center"><?DOC_DHCP></td>
+			  </tr>
+			  <tr valign="top">
+				 <td width="490">Docsis-TFTP</td>
+				 <td align="center"><?DOC_TFTP></td>
+			  </tr>
+			  <tr valign="top">
+				 <td width="490">Docsis-Data Reg Complete</td>
+				 <td align="center"><?DOC_DATA_REG></td>
+			  </tr>
+			  <tr valign="top">
+				 <td width="490">Telephony-DHCP</td>
+				 <td align="center"><?TEL_DHCP></td>
+			  </tr>
+			  <tr valign="top">
+				 <td width="490">Telephony-TFTP</td>
+				 <td align="center"><?TEL_TFTP></td>
+			  </tr>
+			  <tr valign="top">
+				 <td width="490">Telephony-Reg with Call Server</td>
+				 <td align="center"><?TEL_CS_REG></td>
+			  </tr>
+			  <tr valign="top">
+				 <td width="490">Telephony-Reg Complete</td>
+				 <td align="center"><?TEL_REG></td>
+			  </tr>
+			</tbody>
+		 </table>
+	
+		 <br><b>TOD State:</b><br>
+		 <table border="1" width="770">
+			<tbody>
+			  <tr valign="top">
+				 <td align="left" width="490">Time of Day</td>
+				 <td align="center"><?TOD_STATE></td>
+			  </tr>
+			</tbody>
+		 </table>
+	
+		 <br><b>BPI State:</b><br>
+		 <table border="1" width="770">
+			<tbody>
+			  <tr valign="top">
+				 <td align="left" width="490">BPI Status</td>
+				 <td align="center"><?BPI_STATE></td>
+			  </tr>
+			</tbody>
+		 </table>
+	
+		 <br><b>DHCP Attempts to obtain CM IP Address:</b><br>
+	
+		 <table border="1" width="770">
+			<tbody>
+			    <tr valign="top">
+			       <td align="left" width="490">IPv4 Attempt(s)</td>
+			       <td align="center"><?DHCPv4_ATTEMPTS></td>
+		        </tr>
+                <tr valign="top">
+			       <td align="left" width="490">IPv6 Attempt(s)</td>
+			       <td align="center"><?DHCPv6_ATTEMPTS></td>
+		         </tr>
+			</tbody>
+		 </table>
+	
+		 <?TLM_HTML>
+		 <?TLM_STATUS>
+		 <?TLM_SERIAL>
+		 <?TLM_PART>
+		 <?TLM_TESTSTATE>
+		 
+	<!-- END ARRIS PAGE CONTENT -->
+	</p>
+	</div> <!-- main_body -->
+
+	<div class="push"></div>
+</div> <!-- wrapper -->
+	 
+<div class="footer">
+    <?ARRIS_COPYWRITE>
+</div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+profile_override_file=/nvram/profile
+if [ -e $profile_override_file ]; then
+    # Override profile
+    if [ "$0" == "/etc/init.d/rcS" ]; then
+        # Log only on 1st access
+        echo "Using profile: $profile_override_file"
+    fi
+    . $profile_override_file
+else
+    # Set default Stack - 64k
+    ulimit -s 64
+
+    # Lock process memory for all processes
+    if [ -e /lib/liblock_mem.so ]; then
+        export LD_PRELOAD="/lib/liblock_mem.so"
+    fi
+fi
+

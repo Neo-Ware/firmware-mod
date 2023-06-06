@@ -1,0 +1,10 @@
+#
+tts/0::sysinit:/etc/init.d/rcS > /dev/console 2> /dev/console
+
+tts/0::respawn:/bin/sh --login /etc/scripts/start_cli.sh > /dev/console 2> /dev/console
+
+# Stuff to do before rebooting
+#::ctrlaltdel:/sbin/reboot
+::shutdown:/bin/umount -l /nvram /nvram2 /var /sys #ARRIS MODIFY
+null::shutdown:ifconfig usb0 down 2> /dev/null
+#::shutdown:/sbin/swapoff -a

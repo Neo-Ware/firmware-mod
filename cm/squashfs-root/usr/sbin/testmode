@@ -1,0 +1,105 @@
+# !/bin/sh
+
+check_and_report()
+{
+if [ $? -eq 0 ]; then
+echo "DONE";\
+else
+echo -e "\n\n**** FAILED to start Test Mode ****\n\n"
+exit 1
+fi
+}
+
+echo -e "\n*************************************"
+echo "    Starting Puma6 Test Mode"
+echo -e "*************************************\n"
+
+# ARRIS start watchdog here in testmode instead of multiple places in rcS script
+echo -n "Starting watchdog... "
+/usr/sbin/watchdog_rt -t 15 /dev/watchdog
+check_and_report
+# END ARRIS
+
+echo -n "Installing Logger service... "
+/usr/sbin/logger
+check_and_report
+
+echo -n "Installing GP-Timer service... "
+/usr/sbin/gptimer &
+check_and_report
+
+echo -n "Installing L2Switch network device "
+insmod /lib/modules/2.6.39.3/kernel/drivers/net/cat_l2switch_netdev/cat_l2switch_netdev.ko
+check_and_report
+
+echo -n "Installing L2Switch proxy driver "
+insmod /lib/modules/2.6.39.3/drivers/net/l2switch_proxy_driver.ko
+check_and_report
+
+echo -n "Installing SOC Interface kernel module... "
+insmod /lib/modules/2.6.39.3/drivers/char/soc_if_driver.ko
+check_and_report
+mknod /dev/soc_if_driver c 36 0
+
+echo -n "Initializing DOCSIS driver... "
+/usr/sbin/docsis_init_once
+check_and_report
+
+echo -n "Installing DOCSIS CPPI & Management kernel module... "
+insmod /lib/modules/2.6.39.3/drivers/char/docsis_management.ko
+check_and_report
+mknod /dev/docsis_mng c 32 0
+
+echo -n "Installing Interrupt handler kernel module... "
+insmod /lib/modules/2.6.39.3/drivers/char/kintr.ko
+check_and_report
+
+echo -n "Initializing HAL Command Mailbox application... "
+hal_cmd_mbox &
+check_and_report
+
+echo -n "Initializing HAL Event Mailbox application... "
+hal_event_mbox &
+check_and_report
+sleep 1
+
+echo -n "Initializing Interrupt handler application... "
+mlx -d DOCINT -n 6 &
+check_and_report
+
+echo -n "Initializing Tuner manager application... "
+hal_tuner_mgr &
+check_and_report
+
+echo "Initializing L2switch... "
+l2switch_init &
+sleep 2
+
+echo -n "Initializing EXT switch... "
+/usr/sbin/ext_switch_init &
+check_and_report
+
+# ARRIS REMOVE - this breaks testmode for us
+#echo -n "Initializing LAN IP Address... "
+#ifconfig l2sd0 192.168.100.1 netmask 255.255.255.0 broadcast 192.168.100.255 up
+#check_and_report
+
+#echo -n "Open LAN Port... "
+#cli system/l2switch/enablePorts 133
+#check_and_report
+# END ARRIS REMOVE
+
+echo -e "\n**** Test mode initialization completed ****\n"
+# ARRIS CHANGE
+#exec /usr/sbin/cli
+
+# The following inits the L2SW DB until it can be moved to a better file by Intel
+sleep 2
+/usr/sbin/ext_switch_init
+check_and_report
+
+# Run Arris Init process
+arris_init
+# END ARRIS CHANGE
+
+

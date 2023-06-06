@@ -1,0 +1,35 @@
+#################################################################
+#	This file is intended for vendor use
+#################################################################
+
+#################################################################
+#	Sample vendor rule
+#################################################################
+# Index of the rule
+#RULE = VENDOR_FIRSTRULE
+
+# Condition to start rule, existence of one of the following
+#START_COND = RULE_COMPLETED,PACM_LASTRULE
+
+# Command with parameters
+#COMMAND = NONE
+
+# Scheduling (priority) of the process
+#SCHED = NICE,0
+
+# Daemon flag - Process must not end
+#DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+#END_COND = EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+#END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+#FAILURE_ACTION = NONE
+
+# Active
+#ACTIVE = YES
+
+#################################################################

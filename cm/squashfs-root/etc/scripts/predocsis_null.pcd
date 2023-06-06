@@ -1,0 +1,66 @@
+############################################################################
+##+----------------------------------------------------------------------+##
+##|                                ####                                  |##
+##|                                ####                                  |##
+##|                                ######o###                            |##
+##|                          ########_///_####                           |##
+##|                           ##### /_//_/ ####                          |##
+##|                            ## ## (__/ ####                           |##
+##|                                #########                             |##
+##|                                 ####                                 |##
+##|                                  ###                                 |##
+##|                                                                      |##
+##|     Copyright (c) 2006 - 2008    Texas Instruments Incorporated      |##
+##|                        ALL RIGHTS RESERVED                           |##
+##|                                                                      |##
+##| Permission is hereby granted to licensees of Texas Instruments       |##
+##| Incorporated (TI) products to use this computer program for the sole |##
+##| purpose of implementing a licensee product based on TI products.     |##
+##| No other rights to reproduce, use, or disseminate this computer      |##
+##| program, whether in part or in whole, are granted.                   |##
+##|                                                                      |##
+##| TI makes no representation or warranties with respect to the         |##
+##| performance of this computer program, and specifically disclaims     |##
+##| any responsibility for any damages, special or consequential,        |##
+##| connected with the use of this program.                              |##
+##|                                                                      |##
+##+----------------------------------------------------------------------+##
+############################################################################
+
+############################################################################
+#
+# PCD Script for a NULL PREDOCSIS Component 
+#
+############################################################################
+
+#################################################################
+
+# Index of the rule
+RULE = PREDOCSIS_LASTRULE
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,SYSTEM_LASTRULE
+
+# Command with parameters
+COMMAND = NONE
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = NONE
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+

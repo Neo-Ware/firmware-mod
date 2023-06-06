@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ /******************************************************************************
+  * Copyright (c) 2015  ARRIS Group Inc.                                        *
+   * All Rights Reserved                                                         *
+    * No portions of this material may be reproduced in any form without the      *
+     * written permission of ARRIS.                                                *
+      *                                                                             *
+       * All information contained in this document is Arris company private,        *
+        * proprietary, and trade secret.                                              *
+	 *                                                                             *
+	  *******************************************************************************
+-->
+<CONFIG>
+	<COMPONENT NAME="WIFI_24G">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="ENABLE" />
+		<PARAMETER NAME="SSIDNAME" />
+		<PARAMETER NAME="PASSPHRASE" />
+		<PARAMETER NAME="SECURITYMODE" />
+		<PARAMETER NAME="MODE" />
+		<PARAMETER NAME="BANDWIDTH" />
+		<PARAMETER NAME="SIDEBAND" />
+		<PARAMETER NAME="CHANNEL" />
+		<PARAMETER NAME="POWER" />
+		<PARAMETER NAME="GUEST_NW_EN" />
+	</COMPONENT>
+	<COMPONENT NAME="WIFI_5G">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="ENABLE" />
+		<PARAMETER NAME="SSIDNAME" />
+		<PARAMETER NAME="PASSPHRASE" />
+		<PARAMETER NAME="SECURITYMODE" />
+		<PARAMETER NAME="MODE" />
+		<PARAMETER NAME="BANDWIDTH" />
+		<PARAMETER NAME="SIDEBAND" />
+		<PARAMETER NAME="CHANNEL" />
+		<PARAMETER NAME="POWER" />
+		<PARAMETER NAME="GUEST_NW_EN" />
+	</COMPONENT>
+	<COMPONENT NAME="WIFI_GUEST_24G">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="SSIDNAME" />
+		<PARAMETER NAME="PASSPHRASE" />
+		<PARAMETER NAME="SECURITYMODE" />
+		<PARAMETER NAME="ENABLE" />
+	</COMPONENT>
+	<COMPONENT NAME="WIFI_GUEST_5G">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="SSIDNAME" />
+		<PARAMETER NAME="PASSPHRASE" />
+		<PARAMETER NAME="SECURITYMODE" />
+		<PARAMETER NAME="ENABLE" />
+	</COMPONENT>
+	<COMPONENT NAME="PARENT_URL_FILTER">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="URL" />
+		<PARAMETER NAME="DATETIME" />
+	</COMPONENT>
+	<COMPONENT NAME="PARENT_KEYWORD_FILTER">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="KEY" />
+		<PARAMETER NAME="DATETIME" />
+	</COMPONENT>
+	<COMPONENT NAME="FIRMWARE">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="SWVERSION" />
+		<PARAMETER NAME="LATESTSWVERSION" />
+		<PARAMETER NAME="UPGRADESW" />
+		<PARAMETER NAME="CHANGELOG" />
+	</COMPONENT>
+	<COMPONENT NAME="NETWORKMAP">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="MAC" />
+		<PARAMETER NAME="IP" />
+		<PARAMETER NAME="DEVICETYPE" />
+		<PARAMETER NAME="OSTYPE" />
+		<PARAMETER NAME="HOSTNAME" />
+		<PARAMETER NAME="CONNTYPE" />
+		<PARAMETER NAME="SSIDNAME" />
+		<PARAMETER NAME="RADIOTYPE" />
+		<PARAMETER NAME="LEAF" />
+	</COMPONENT>
+	<COMPONENT NAME="ADMIN_LOGIN">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="USERNAME" />
+		<PARAMETER NAME="PASSWORD" />
+	</COMPONENT>
+	<COMPONENT NAME="DEVICE_INFO">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="IPADDRESS" />
+		<PARAMETER NAME="EROUTER_MAC" />
+		<PARAMETER NAME="SERIAL" />
+		<PARAMETER NAME="HOSTNAME" />
+		<PARAMETER NAME="MODEL" />
+		<PARAMETER NAME="REMOTE_CONFIG" />
+		<PARAMETER NAME="BAND_STEERING" />
+		<PARAMETER NAME="BAND_SELECTION" />
+		<PARAMETER NAME="PARENT_ENABLE" />
+	</COMPONENT>
+	<COMPONENT NAME="TIME_ZONE">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="SELECTED" />
+		<PARAMETER NAME="DST" />
+	</COMPONENT>
+	<COMPONENT NAME="DEV_REGINFO">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="REGISTERED" />
+		<PARAMETER NAME="URL" />
+	</COMPONENT>
+	<COMPONENT NAME="REMOTE_CONFIG">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="ENABLE" />
+		<PARAMETER NAME="USERNAME" />
+		<PARAMETER NAME="PASSWORD" />
+	</COMPONENT>
+	<COMPONENT NAME="TRUSTED_DEVICE">
+		<PARAMETER NAME="ALL" />
+		<PARAMETER NAME="MAC" />
+	</COMPONENT>
+</CONFIG>

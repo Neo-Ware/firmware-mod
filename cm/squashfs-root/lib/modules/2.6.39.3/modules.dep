@@ -1,0 +1,38 @@
+kernel/fs/romfs/romfs.ko:
+kernel/crypto/ansi_cprng.ko:
+kernel/drivers/net/cat_l2switch_netdev/cat_l2switch_netdev.ko:
+kernel/net/netfilter/nf_conntrack_proto_gre.ko:
+kernel/net/netfilter/nf_conntrack_ftp.ko:
+kernel/net/netfilter/nf_conntrack_h323.ko:
+kernel/net/netfilter/nf_conntrack_irc.ko:
+kernel/net/netfilter/nf_conntrack_pptp.ko: kernel/net/netfilter/nf_conntrack_proto_gre.ko
+kernel/net/netfilter/nf_conntrack_sip.ko:
+kernel/net/netfilter/nf_conntrack_tftp.ko:
+kernel/net/netfilter/nf_conntrack_rtsp.ko:
+kernel/net/ipv4/netfilter/nf_nat_ftp.ko: kernel/net/netfilter/nf_conntrack_ftp.ko
+kernel/net/ipv4/netfilter/nf_nat_h323.ko: kernel/net/netfilter/nf_conntrack_h323.ko
+kernel/net/ipv4/netfilter/nf_nat_irc.ko: kernel/net/netfilter/nf_conntrack_irc.ko
+kernel/net/ipv4/netfilter/nf_nat_rtsp.ko: kernel/net/netfilter/nf_conntrack_rtsp.ko
+kernel/net/ipv4/netfilter/nf_nat_pptp.ko: kernel/net/netfilter/nf_conntrack_pptp.ko kernel/net/netfilter/nf_conntrack_proto_gre.ko kernel/net/ipv4/netfilter/nf_nat_proto_gre.ko
+kernel/net/ipv4/netfilter/nf_nat_sip.ko: kernel/net/netfilter/nf_conntrack_sip.ko
+kernel/net/ipv4/netfilter/nf_nat_tftp.ko: kernel/net/netfilter/nf_conntrack_tftp.ko
+kernel/net/ipv4/netfilter/nf_nat_proto_gre.ko:
+drivers/tlm/tlm.ko:
+drivers/tlm/tibat.ko:
+drivers/tlm/atmel.ko:
+drivers/char/voiceni.ko:
+drivers/char/telehal.ko: drivers/char/mxpmod.ko
+drivers/char/dspmod.ko:
+drivers/char/mxpmem.ko:
+drivers/char/mxpmod.ko:
+drivers/char/soc_if_driver.ko:
+drivers/char/docsis_management.ko:
+drivers/char/kintr.ko:
+drivers/arris.ko: drivers/net/avalanche_cnid.ko drivers/net/docsis_bridge.ko
+drivers/net/mtani.ko: drivers/net/docsis_bridge.ko
+drivers/net/docsis_pp.ko:
+drivers/net/docsis_bridge.ko:
+drivers/net/docsis_fltr_class.ko: drivers/net/docsis_bridge.ko drivers/char/docsis_management.ko
+drivers/net/avalanche_cnid.ko: drivers/net/docsis_bridge.ko
+drivers/net/arris_switch.ko:
+drivers/net/l2switch_proxy_driver.ko: kernel/drivers/net/cat_l2switch_netdev/cat_l2switch_netdev.ko

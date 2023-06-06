@@ -1,0 +1,88 @@
+#################################################################
+
+# Index of the rule
+RULE = PUMA6SYSTEM_RPC_MANAGEMENT
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED, PUMA6SYSTEM_SWITCH_INIT
+
+# Command with parameters
+COMMAND = /usr/sbin/rpc_management_server
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = NO
+
+#################################################################
+
+# Index of the rule
+RULE = PUMA6SYSTEM_RPC_IFCONFIG
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PUMA6SYSTEM_SYNC_APP_NP_REBOOT,PUMA6SYSTEM_SWITCH_INIT
+
+# Command with parameters
+COMMAND = /usr/sbin/rpc_ifconfig
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = PUMA6_RPC_LASTRULE
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PUMA6SYSTEM_RPC_IFCONFIG
+
+# Command with parameters
+COMMAND = NONE
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = NONE
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################

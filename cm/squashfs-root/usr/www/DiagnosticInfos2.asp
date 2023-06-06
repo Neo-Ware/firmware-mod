@@ -1,0 +1,1 @@
+cgi-bin/diaginfo_cgi

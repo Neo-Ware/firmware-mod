@@ -1,0 +1,407 @@
+#################################################################
+
+# Index of the rule
+RULE = PACM_MTANI
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,DOCSIS_LASTRULE
+
+# Command with parameters
+COMMAND = insmod /lib/modules/2.6.39.3/drivers/net/mtani.ko
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = REBOOT
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_INIT
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PACM_MTANI
+
+# Command with parameters
+COMMAND = /usr/sbin/pacm_init
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_SNMP
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PACM_INIT
+
+# Command with parameters
+COMMAND = /usr/sbin/pacm_snmp_agent -c /etc/agent_mta.cnf -T 3 -n
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = 30000
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = REBOOT
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_EVENTMGR
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PACM_INIT
+
+# Command with parameters
+COMMAND = /usr/sbin/pacm_event_mgr
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = 30000
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = RESTART
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_VENDORAPP
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PACM_INIT
+
+# Command with parameters
+COMMAND = /usr/sbin/pacm_vendor_app
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = 30000
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = RESTART
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_DOIM
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PACM_INIT
+
+# Command with parameters
+COMMAND = /usr/sbin/pacm_doim
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = 30000
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = RESTART
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_SECURITY
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PACM_INIT
+
+# Command with parameters
+COMMAND = /usr/sbin/pacm_security
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = 30000
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = REBOOT
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_INITDONE
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,VOICE_LASTRULE,PACM_SNMP,PACM_EVENTMGR,PACM_VENDORAPP,PACM_DOIM,PACM_SECURITY
+
+# Command with parameters
+COMMAND = NONE
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = NONE
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_MTACTRL
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PACM_INITDONE
+
+# Command with parameters
+COMMAND = /usr/sbin/pacm_mta_control
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = NONE
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = EXEC_RULE,PACM_MTACTLRCVR
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_MTACTLRCVR
+
+# Condition to start rule, existence of one of the following
+START_COND = NONE
+
+# Command with parameters
+COMMAND = /usr/sbin/pacm_mta_control -r
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = NONE
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = REBOOT
+
+# Active
+ACTIVE = NO
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_DHCP
+
+# Condition to start rule, existence of one of the following
+START_COND = NONE
+
+# Command with parameters
+COMMAND = /sbin/ti_udhcpc
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = NONE
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = NO
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_DHCPV6
+
+# Condition to start rule, existence of one of the following
+START_COND = NONE
+
+# Command with parameters
+COMMAND = /sbin/ti_dhcp6c
+
+# Scheduling (priority) of the process
+SCHED = NICE,-19
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = NONE
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = NO
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_TFTP
+
+# Condition to start rule, existence of one of the following
+START_COND = NONE
+
+# Command with parameters
+COMMAND = /sbin/ti_tftp
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = NO
+
+#################################################################
+
+# Index of the rule
+RULE = PACM_LASTRULE
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PACM_MTACTRL
+
+# Command with parameters
+COMMAND = NONE
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = NONE
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################

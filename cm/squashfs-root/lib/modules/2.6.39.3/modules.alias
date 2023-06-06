@@ -1,0 +1,20 @@
+# Aliases extracted from modules themselves.
+alias stdrng ansi_cprng
+alias nfct-helper-ftp nf_conntrack_ftp
+alias ip_conntrack_ftp nf_conntrack_ftp
+alias nfct-helper-h323 nf_conntrack_h323
+alias ip_conntrack_h323 nf_conntrack_h323
+alias nfct-helper-irc nf_conntrack_irc
+alias ip_conntrack_irc nf_conntrack_irc
+alias nfct-helper-pptp nf_conntrack_pptp
+alias ip_conntrack_pptp nf_conntrack_pptp
+alias nfct-helper-sip nf_conntrack_sip
+alias ip_conntrack_sip nf_conntrack_sip
+alias nfct-helper-tftp nf_conntrack_tftp
+alias ip_conntrack_tftp nf_conntrack_tftp
+alias ip_nat_ftp nf_nat_ftp
+alias ip_nat_h323 nf_nat_h323
+alias ip_nat_irc nf_nat_irc
+alias ip_nat_pptp nf_nat_pptp
+alias ip_nat_sip nf_nat_sip
+alias ip_nat_tftp nf_nat_tftp

@@ -1,0 +1,272 @@
+############### ARRIS VOICE INIT RULES ##########################
+#################################################################
+
+
+########## END ARRIS INIT RULES #################################
+
+#################################################################
+
+# Index of the rule
+RULE = VOICE_INSMXPMOD
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PACM_INIT
+
+# Command with parameters
+COMMAND = insmod /lib/modules/2.6.39.3/drivers/char/mxpmod.ko
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = VOICE_INSMXPMEM
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,VOICE_INSMXPMOD
+
+# Command with parameters
+COMMAND = insmod /lib/modules/2.6.39.3/drivers/char/mxpmem.ko
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = VOICE_INSDSPMOD
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,VOICE_INSMXPMEM
+
+# Command with parameters
+# ARRIS CHANGE add $zsimode variable
+COMMAND = insmod /lib/modules/2.6.39.3/drivers/char/dspmod.ko $zsimode
+# END ARRIS CHANGE
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = VOICE_INSTELEHAL
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,VOICE_INSDSPMOD
+
+# Command with parameters
+# ARRIS CHANGE add $zsimode variable
+COMMAND = insmod /lib/modules/2.6.39.3/drivers/char/telehal.ko irq_support=1 $zsimode
+# END ARRIS CHANGE
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = VOICE_INSVOICENI
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,VOICE_INSTELEHAL
+
+# Command with parameters
+COMMAND = insmod /lib/modules/2.6.39.3/drivers/char/voiceni.ko
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+# Index of the rule
+RULE = VOICE_NET
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED, VOICE_INSVOICENI
+
+# Command with parameters
+COMMAND = /sbin/ifconfig vni0 up 
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+# Index of the rule
+RULE = VOICE_UDEVSTART
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,VOICE_NET
+
+# Command with parameters
+COMMAND = udevstart dspmod
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = VOICE_GGAPP
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,VOICE_UDEVSTART
+
+# Command with parameters
+COMMAND = /usr/sbin/ggncs 2> /dev/console
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND =  PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = 15000			#ARRIS MODIFY - from 5000 to 15000
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = REBOOT
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = VOICE_LASTRULE
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,VOICE_GGAPP
+
+# Command with parameters
+COMMAND = NONE
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = NONE
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+

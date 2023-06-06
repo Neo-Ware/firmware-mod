@@ -1,0 +1,351 @@
+#################################################################
+# Index of the rule
+RULE = PUMA6SYSTEM_L2SW_INSMODE
+
+# Condition to start rule, existence of one of the following
+START_COND = NONE
+
+# Command with parameters
+COMMAND = /etc/scripts/l2switch_drvinit.sh
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND =  EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+# Index of the rule
+RULE = PUMA6SYSTEM_L2SWITCH
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED, SYSTEM_LOGGER, PUMA6SYSTEM_L2SW_INSMODE
+
+# Command with parameters
+COMMAND = /usr/sbin/l2switch_init
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = REBOOT
+
+# Active
+ACTIVE = YES
+
+
+#################################################################
+# Index of the rule
+RULE = PUMA6SYSTEM_SWITCH_INIT
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,SYSTEM_LOGGER , PUMA6SYSTEM_L2SWITCH
+
+# Command with parameters
+COMMAND = /usr/sbin/ext_switch_init
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = PUMA6SYSTEM_WLAN_RPC_REVERSE
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PUMA6SYSTEM_SWITCH_INIT
+
+# Command with parameters
+COMMAND = /usr/sbin/rpc_reverse_server
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = NO
+#################################################################
+
+# Index of the rule
+RULE = PUMA6SYSTEM_MOCA
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PUMA6SYSTEM_SWITCH_INIT
+
+# Command with parameters
+COMMAND = /usr/sbin/mocad
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active -- ARRIS CHANGE this to NO, and decide at runtime whether to start MOCA
+ACTIVE = NO
+
+#################################################################
+
+# Index of the rule
+RULE = PUMA6SYSTEM_MOCA_SUBAGENT
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PUMA6SYSTEM_SWITCH_INIT
+
+# Command with parameters
+COMMAND = /usr/sbin/moca_subagent
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = RESTART # ARRIS MOD
+
+# Active -- ARRIS CHANGE this to NO, and decide at runtime whether to start MOCA
+ACTIVE = NO
+
+#################################################################
+# Index of the rule
+RULE = PUMA6SYSTEM_CRU_CTRL_MKNOD
+
+# Condition to start rule, existence of one of the following
+START_COND = NONE
+
+# Command with parameters
+COMMAND = mknod /dev/CruCtrl c 23 0
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND =  EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+# Index of the rule
+RULE = PUMA6SYSTEM_DECT_UART_IRQ_PRIORITY
+
+# Condition to start rule, existence of one of the following
+START_COND = NONE
+
+# Command with parameters
+COMMAND = echo 1 98 > /proc/irq/8/schedule_param
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND =  EXIT,0
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+# Index of the rule
+RULE = PUMA6SYSTEM_SYNC_APP_NP_REBOOT
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,SYSTEM_GIM
+
+# Command with parameters
+COMMAND = /usr/sbin/sync_app_np_reboot
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = PROCESS_READY
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = REBOOT
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+INCLUDE = /etc/scripts/puma6_rpc.pcd
+
+#################################################################
+
+
+#ARRIS ADD - Start
+# Index of the rule
+RULE = PUMA6SYSTEM_ARRIS_EVENT
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PUMA6_RPC_LASTRULE,GW_APPRUN
+
+# Command with parameters
+COMMAND = /usr/sbin/eventd -d
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = YES
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = NONE
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+#ARRIS ADD - End
+
+#################################################################
+
+# Index of the rule
+RULE = PUMA6SYSTEM_LASTRULE
+
+# Condition to start rule, existence of all of the following
+# ARRIS CHANGE - remove PUMA6SYSTEM_MOCA from the list of dependancies since we decide at runtime whether to active it
+START_COND = RULE_COMPLETED,PUMA6_RPC_LASTRULE,PUMA6SYSTEM_CRU_CTRL_MKNOD,PUMA6SYSTEM_DECT_UART_IRQ_PRIORITY
+
+# Command with parameters
+COMMAND = NONE
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = NONE
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################
+
+# Index of the rule
+RULE = LPCM_SM
+
+# Condition to start rule, existence of one of the following
+START_COND = RULE_COMPLETED,PUMA6SYSTEM_LASTRULE,SYSTEM_APPPSM
+
+# Command with parameters
+COMMAND = /usr/sbin/lpcm_sm
+
+# Scheduling (priority) of the process
+SCHED = NICE,0
+
+# Daemon flag - Process must not end
+DAEMON = NO
+
+# Condition to end rule and move to next rule, wait for one of the following:
+END_COND = NONE
+
+# Timeout for end condition. Fail if timeout expires
+END_COND_TIMEOUT = -1
+
+# Action upon failure, do one of the following actions upon failure
+FAILURE_ACTION = NONE
+
+# Active
+ACTIVE = YES
+
+#################################################################

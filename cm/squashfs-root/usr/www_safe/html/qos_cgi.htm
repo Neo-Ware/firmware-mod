@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC
+"-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>QoS Statistics</title>
+	<meta http-equiv="Pragma" content="no-cache">
+    <link rel="stylesheet" href="/arris_style.css">
+</head>
+
+<body>
+<div class="wrapper">
+
+	<div class="header">
+	<div class="header_text">
+		<h1>QoS Statistics</h1>
+	</div>
+	</div>
+
+	<div id="navbar">
+	<ul>
+	<?ARRIS_MENU>
+	</ul>
+	</div>
+	
+	<div class="main_body">
+	<p>
+	<!-- INSERT ARRIS PAGE CONTENT HERE -->
+	
+    <TABLE cellSpacing=0 cols=3 cellPadding=1 width=770 bgColor=#0c055c><TBODY><TR>
+    <TD width=770><B><FONT color=#ffffff size=+1>&nbsp;CALLP</FONT></B></TD>
+    <TD width=770><B><FONT color=#ffffff size=+1>&nbsp;High Definition Audio</FONT></B></TD>
+    <TD width=770><B><FONT color=#ffffff size=+1>&nbsp; </FONT></B></TD>
+    </TR></TBODY></TABLE>
+    <br><table cellPadding=2 border=1><tr>
+    <td>  Line    </td>
+    <td>LC State</td>
+    <td>CallP State</td>
+    <td>Loop Current</td>    
+    <td>HD Status</td>
+    <td>WB SLIC</td>
+    <td>HD Enable</td>
+    <td>HD EndPnt Enable</td>
+    <td>HD Codec Provisioned</td>
+<!--    <td> PrimaryCodec</td>-->   
+    </tr>
+    <?CALLP_TABLE>
+    </table>
+    <?SIPPROXY_TABLE>
+    <p>Payload Header Suppression for voice calls is <b><?PHS_STATE></b>
+     (due to provisioning)</p>
+
+    <table>
+        <tr valign="top"><td><a href="mgcp_cgi">Show Call Signalling Log</a></td></tr>
+    </table>
+    <table>
+        <form method="post" action="qos_cgi">
+            <tr><td><input type="submit" <?MGCP_LOG_STATUS>></td>
+                <td><input type="submit" name="mgcpClear" value="Clear"></td></tr>
+        </form>
+    </table>
+
+    <TABLE cellSpacing=0 cols=1 cellPadding=0 width=770 bgColor=#0c055c><TBODY>
+    <TR>
+    <TD width=770><B><FONT color=#ffffff size=+1>&nbsp;QoS</FONT></B></TD></TR></TBODY></TABLE>
+    <table border ="1" width="770"><tr><td width="89" align="center">SFID</td>
+            <td width="220" align="center"> Service Class Name</td><td width="137" align="center"> Direction</td>
+            <td width="100" align="center"> Primary Flow</td><td width="100" align="center"> Traffic Type</td>
+            <td width="90" align="center"> Packets</td></tr>
+        <?SERVICE_FLOW_DATA>
+    </table>
+
+    <table>
+        <tr valign="top"><td><a href="dsx_cgi">Show DSX Log</a></td></tr>
+    </table>
+    <table>
+        <form method="post" action="qos_cgi">
+            <tr><td><input type="submit" <?DSX_LOG_STATUS>></td>
+                <td><input type="submit" name="dsxClear" value="Clear"></td></tr>
+        </form>
+    </table>
+	
+	<!-- END ARRIS PAGE CONTENT -->
+	</p>
+	</div> <!-- main_body -->
+
+	<div class="push"></div>
+</div> <!-- wrapper -->
+	 
+<div class="footer">
+    <?ARRIS_COPYWRITE>
+</div>
+</body>
+</html>
+
+

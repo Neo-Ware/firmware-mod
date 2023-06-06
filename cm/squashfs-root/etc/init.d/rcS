@@ -1,0 +1,554 @@
+#! /bin/sh
+#
+# rcS           Call all S??* scripts in /etc/rcS.d in
+#               numerical/alphabetical order.
+#
+# Version:      @(#)/etc/init.d/rcS  2.76  19-Apr-1999  miquels@cistron.nl
+#
+trap "" SIGHUP
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+LD_LIBRARY_PATH=/lib:/usr/lib
+
+runlevel=S
+prevlevel=N
+umask 022
+export PATH runlevel prevlevel
+
+#
+#       Trap CTRL-C &c only in this shell so we can interrupt subprocesses.
+#
+trap ":" INT QUIT TSTP
+
+mount -n /proc
+mount /var
+mount /sys
+mount /dev
+mkdir /dev/pts
+mount /dev/pts
+
+(cd /; tar xf var.tar)
+
+# Calibrate sched_clock
+if [ -e /proc/avalanche/sched_clock_calibrate ]; then
+    echo 1 > /proc/avalanche/sched_clock_calibrate
+fi
+
+echo -e "\nAbout to set realtime runtime...\n"
+
+# Set sched_rt_runtime
+## UNIHAN MOD START for PROD00212305
+##if [ -e /proc/sys/kernel/sched_rt_runtime_us ]; then
+##    echo 990000 > /proc/sys/kernel/sched_rt_runtime_us
+##fi
+## UNIHAN MOD END for PROD00212305
+
+# setup local interface
+/sbin/ifconfig lo 127.0.0.1
+
+# ARRIS ADD START
+# setup IPv4 neighbor table thresholds
+echo 1024 > /proc/sys/net/ipv4/neigh/default/gc_thresh1
+echo 4096 > /proc/sys/net/ipv4/neigh/default/gc_thresh2
+echo 8192 > /proc/sys/net/ipv4/neigh/default/gc_thresh3
+# ARRIS ADD END
+
+echo -e "\nAbout to initialize PP ...\n"
+mknod  /dev/pdsp      c 100 0
+
+if [ -e /lib/modules/2.6.39.3/drivers/char/ppdDriver.ko ]; then
+    # PUMA5 case
+insmod /lib/modules/2.6.39.3/drivers/char/ppdDriver.ko
+mknod  /dev/ppdDriver c 22 0
+    /usr/sbin/pp_fw_download
+rm -rf /dev/ppdDriver
+    rmmod  ppdDriver
+else
+    # PUMA6 case
+    mknod  /dev/pp        c 101 0
+    /usr/sbin/pp_fw_download
+fi
+echo -e "\nThe PP Should be running now ...\n"
+
+# If using hotplug, need to use udev
+if test -f /proc/sys/kernel/hotplug
+then
+    echo "/sbin/udev" > /proc/sys/kernel/hotplug
+fi
+
+# If hwclock program is present, sync the system time with RTC time
+if test -f /sbin/hwclock
+then
+    udevstart
+    /sbin/hwclock -s
+fi
+
+udevstart
+
+# Mount the NVRAM partition
+# if 'nvram' parameter is exist (from command line), then mount this, else parse mtd partitions
+#examples "nvram=/dev/mmcblk0p3" or "nvram=/dev/mtdblock2"
+# fsck.ext3 return code
+# 0 - No errors
+# 1 - File system errors corrected
+# 2 - System should be rebooted
+# 4 - File system errors left uncorrected
+# 8 - Operational error
+# 16 - Usage or syntax error
+# 32 - Fsck canceled by user request
+# 128 - Shared library error
+if [ ! -z $nvram ]; then
+    fsck.ext3 -p $nvram
+    value=$?
+    echo "The device $nvram was scan with fsck.ext3 and the return value is $value "
+    case $value in
+                    0|1)
+                        mount -t ext3  $nvram /nvram -o data=journal -o barrier=1
+                        ;;
+
+                    2)
+                        echo "System should be rebooted because of fsck return code"
+                        reboot
+                        ;;
+
+                    *)
+                        echo "The device $nvram need a second fsck run due to some errors "
+                        fsck.ext3 -yf $nvram
+                        mount -t ext3  $nvram /nvram -o data=journal -o barrier=1
+    esac
+
+    if [ $? != 0 ]; then
+                    echo "Please format the device $nvram to ext3 file system"
+    else
+                    echo "mount -t ext3 $nvram /nvram -o data=journal -o barrier=1"
+    fi
+
+else
+    # Get the mtdblock
+    #   /proc/mtd line is : "mtdnnnn: ... dev"
+    #   grep nvram /proc/mtd --> gets the line with nvram
+    #   cut -f1 -d: --> gets 1st field with delimiter : --> mtdnnnn
+    #   cut -c4- --> from char 4 till end of line --> mtdblock number
+    nvrammtd=`grep nvram /proc/mtd | cut -f1 -d: | cut -c4- `
+    if [ ! -z $nvrammtd ]; then
+        mount -t jffs2 /dev/mtdblock$nvrammtd /nvram
+        echo "mount -t jffs2 /dev/mtdblock$nvrammtd /nvram"
+        echo "mount return $?"
+    fi
+fi
+
+#ARRIS ADD BEGIN
+# Mount the NVRAM2 partition
+# if '/dev/mmcblk0p14' exists, then mount /nvram2 to it
+# fsck.ext3 return code
+# 0 - No errors
+# 1 - File system errors corrected
+# 2 - System should be rebooted
+# 4 - File system errors left uncorrected
+# 8 - Operational error
+# 16 - Usage or syntax error
+# 32 - Fsck canceled by user request
+# 128 - Shared library error
+nvram2='/dev/mmcblk0p14'
+if [ -e $nvram2 ]; then
+    fsck.ext3 -p $nvram2
+    value=$?
+    echo "The device $nvram2 was scan with fsck.ext3 and the return value is $value "
+    case $value in
+                    0|1)
+                        mount -t ext3  $nvram2 /nvram2 -o data=journal -o barrier=1
+                        ;;
+
+                    2)
+                        echo "System should be rebooted because of fsck return code"
+                        reboot
+                        ;;
+
+                    *)
+                        echo "The device $nvram2 need a second fsck run due to some errors "
+                        fsck.ext3 -yf $nvram2
+                        mount -t ext3  $nvram2 /nvram2 -o data=journal -o barrier=1
+    esac
+
+    if [ $? != 0 ]; then
+                    echo "Please format the device $nvram2 to ext3 file system"
+    else
+                    echo "mount -t ext3 $nvram2 /nvram2 -o data=journal -o barrier=1"
+    fi
+fi
+# END ARRIS ADD
+
+# eMMC F/W settings file generation 
+if [ -f /etc/mmc/mmc_auto_settings.sh ]
+then
+    /etc/mmc/mmc_auto_settings.sh
+fi
+# eMMC F/W Auto upgrade 
+if [ -f /etc/mmc/mmc_auto_upgrade.sh ]
+then
+    /etc/mmc/mmc_auto_upgrade.sh
+fi
+
+
+# ARRIS ADD
+# NVM should be initialized before running pcd scripts as well as arris_check_partition
+if test -f /usr/sbin/arris_initnvm 
+then
+    /usr/sbin/arris_initnvm
+    if [ $? -ne 0 ] 
+    then 
+        echo arris_initnvm failed - rebooting;
+        reboot;
+    fi
+fi
+# END ARRIS ADD
+
+# Mount additional filesystems
+#
+# For eMMC/Nand flash, we get the additional filesystems from kernel command line.
+# for each additional file system, the command line have the following parameter:
+# fs[n]=[mmc_partition]
+#   - n is a decimal number
+#   - mmc_partition is the device partition path.
+#   Examples: "fs1=/dev/mmcblk0p3" "fs2=/dev/mmcblk0p5"
+#
+# for SPI/NOR we get the additinal filesystem from the MTD list
+# /proc/mtd has the form:
+# cat /proc/mtd
+#    dev:    size   erasesize  name
+#    mtd0: 01000000 00001000 "RAM0"
+#    mtd1: 000e3b4c 00001000 "Kernel"
+#    mtd2: 00421c00 00001000 "RootFileSystem"
+#    mtd3: 002ff000 00001000 "FS1"
+# All additional filesystems have a name with structure "FS[0-9]+" (+ == 1 or more)
+#
+fsprefix="FS"
+
+# if 'fs[0-9] exit in environment variables, then build the fss from environment variables, for eMMC, else
+# build the fss from MTD list, in /proc/mtd
+if [ -e "/usr/bin/awk" ]; then
+    if [ ! -z "`set | grep fs[1-9][0-9]*`" ]; then
+        #set emmc filesystem list from environment variables in for of "fs[n]=[mmc_partition]"
+        #echo EMMC;
+        # Must remove single quotes (') that are added by "set"
+        #   Use "gsub".
+        #   Since single quote cannot be embedded within a single quoted string,
+        #       and since quoted strings are concatenated into a single string, this is what happens within the gsub:
+        #   gsub("'"'"'","",$0)
+        #       '...gsub("' /* close ' */
+        #       "'" /* new double-quoted string with ' */
+        #       '","",$0)...' /* rest of single quoted string */
+        fss=`set | grep fs[1-9][0-9]* | awk '{$s=$0;split($s,a,"=");sub("fs","FS",a[1]);gsub("'"'"'","",a[2]);print a[2]"-"a[1]}'`
+    else
+        #set MTD filesystem list from /proc/mtd"
+        #echo MTD
+        fss=`cat /proc/mtd | grep "\"$fsprefix[0-9][0-9]*\"" | awk '{$s=$0;sub("mtd", "mtdblock", $s);split($s, a, ":| |\"");print "/dev/"a[1]"-"a[6]}'`
+    fi
+fi
+
+#echo Found FS: $fss
+# fss is a list of file systems.
+# Each element in fss is of the form /dev/mtdblock#-FS# or /dev/mmcblk0p#-FS#
+# - /dev/mtdblock#: # is the index of the mtd block device path
+# - /dev/mmcblk0p#: # is the index of the mmc block device path
+# - FS#: # is the imdex of the FS
+if [ ! -z "$fss" ]; then
+    if [ -e "/etc/config" ]; then
+        . /etc/config
+    fi
+
+# START ARRIS ADD
+# Run Intel's eSAFE init code only for Intel Gateways
+if [ "$CONFIG_VENDOR_ARRIS_GATEWAY" = "y" ]; then
+    echo ""
+    if [ "$CONFIG_VENDOR_INTEL_GATEWAY" = "y" ]; then
+        echo "Running Intel GW..."
+        if test -f /usr/sbin/nvread; then
+            # Read from Arris NVM the variable MFG_INIT_ESAFES to determine whether to load any SQFS images
+            enable_es=`nvread 6.1.71 byte`;
+        
+            if [[ "$enable_es" -eq "1" ]]; then
+                echo "Running Intel eSAFE loader..."
+            # Init eSAFEs enabled, run the below Intel FS-loading code
+# END ARRIS ADD
+
+    if [ -z "$CONFIG_TI_SEPARATE_FS_ROOT_NAME" ]; then
+        fss_root=/fss
+    else
+        fss_root=$CONFIG_TI_SEPARATE_FS_ROOT_NAME
+    fi
+    # Mount the fss share root
+    #echo Mounting $fss_root
+    mount $fss_root
+    # Create a common /etc
+    #echo Creating common etc: $fss_root/etc
+    mkdir $fss_root/etc
+    # Copy /etc from root FS
+    cp -rf /etc/* $fss_root/etc/
+    # Keep org PATH for later use
+    org_path=$PATH
+    #check whether we have a good  gw partition for puma5, if not, then we try to boot from previous bank 
+    success_esafe_partition_check=0
+    prev_bank_is_TS07_load=0;
+    # Mount the file systems
+    for curr_fs in $fss ; do
+        # Process the current FS
+        #echo Processing FS: $curr_fs
+        # devblock has the form '/dev/mtdblock#' or '/dev/mmcblk0p#' where # is the index of the device
+        devblock=`echo $curr_fs | awk '{split($0,a,"-");print a[1]}'`
+        # fs has the form FS#, wher # is the index of the FS
+        fs=`echo $curr_fs | awk '{split($0,a,"-");print a[2]}'`
+        #echo Processing: $curr_fs - $mtdblock - $fs
+# ARRIS ADD
+        # Grab FS number from mtd proc line
+        fs_num=`echo $curr_fs | awk -F"-" '{$s=$2;sub("FS", "", $s);print $s}'`
+        #echo "fs_num = $fs_num"
+
+        if [ "$CONFIG_MACH_PUMA5" = "y" ]; then
+           # Check Arris partition handler to see if we should mount this FS
+           /usr/sbin/arris_check_partition $fs_num  $devblock 
+           process_fs=$?
+           if [ $process_fs -eq 2 ]; then
+             prev_bank_is_TS07_load=1
+           fi
+        #echo "process_fs = $process_fs"
+        else
+           process_fs=0;
+        fi
+
+        # Check result of arris_check_partition
+        if [ $process_fs -eq 0 ]; then
+            echo "Processing eSAFE sector: $curr_fs - $devblock - $fs "
+            success_esafe_partition_check=1
+# END ARRIS ADD
+        # Now fs gets the directory name whene the FS is mounted
+        fs=$fss_root/$fs
+        # Make mount directory
+        #echo Mounting FS: $fs on $mtdblock
+        mkdir -p $fs
+        # Mount fs
+        mount -t squashfs $devblock $fs
+        # Check if the FS has an embedded name
+        if [ -e $fs/*.fsname ]; then
+            cd $fs
+            fs_name=`ls *.fsname | cut -f1 -d.`
+            cd - > /dev/null
+            if [ ! -z "$fs_name" ]; then
+                #echo "Found FS name: $fs_name (instead of $fs)"
+                # Found a name, remove the mount, then remount using the new name
+                umount $fs
+                rm -r $fs
+                fs=$fss_root/$fs_name
+                mkdir -p $fs
+                mount -t squashfs $devblock $fs
+            fi
+        fi
+        #echo Processing $curr_fs as $fs
+        # Connect fs to run environment
+        # Update PATH for executables. app specific path before system path.
+        awkcmd='{$s=$0;gsub(":", '\":$fs\"', $s);print $s}'
+        export PATH=$fs`echo $org_path | awk "$awkcmd"`:$PATH
+        #echo New PATH: $PATH
+        # Update LD_LIBRARY_PATH (uclibc does not suport library search path (ld.so.conf))
+        # ### not supported ### echo $fs/lib >> /etc/ld.so.conf
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$fs/lib:$fs/usr/lib
+        #echo New LD_LIBRARY_PATH: $LD_LIBRARY_PATH
+        # Create links in etc to all file systems
+        ###cp -rf $fs/etc/* $fss_root/etc/
+        # For all subdirs under $fs/etc
+        fs_etc_dirs=`find $fs/etc -type d`
+        #echo "ETC dirs (in $fs): $fs_etc_dirs"
+        for fs_etc_dir in $fs_etc_dirs ; do
+            #echo Processing etc dir: $fs_etc_dir
+            # Remove $fs/etc to get the dir name under etc
+            etc_dir=${fs_etc_dir#$fs/etc}
+            # Create dir under $fss_root/etc
+            etc_etc_dir=$fss_root/etc/$etc_dir
+            #echo Create $etc_etc_dir
+            mkdir -p $etc_etc_dir
+            # List of files in this dir
+            fs_etc_files=`find $fs_etc_dir ! -type d`
+            #echo Found etc files: $fs_etc_files
+            # Create links
+            cd $etc_etc_dir
+            #echo Create links in $etc_etc_dir
+            for fs_etc_file in $fs_etc_files ; do
+                if [ "$CONFIG_VENDOR_ARRIS_DG860" = "y" ]; then
+                   if [  $fs_etc_file == "/fss/gw/etc/scripts/dgwsdk.pcd" ] || [ $fs_etc_file == "/fss/gw/etc/scripts/gwsdk_gw.pcd" ]; then
+                      #for DG860 ignore to create soft link of dgwsdk.pcd and gwsdk_gw.pcd, because they already installed to CM rootfs
+                      echo "ignore create link for $fs_etc_file"
+                   else
+                      ln -sf $fs_etc_file
+                   fi
+                else
+                   ln -sf $fs_etc_file
+                fi
+            done
+            cd - > /dev/null
+        done
+        # Copy var from all file systems
+        cp -rf $fs/var/* /var/
+# ARRIS ADD
+        fi
+# END ARRIS ADD
+    done
+
+    if [ "$CONFIG_MACH_PUMA5" = "y" ]; then
+        if [ $success_esafe_partition_check -eq 0 ] && [ $prev_bank_is_TS07_load -eq 1 ]; then
+            # Below is a work around solution to recover the modem when fail to upgrade from TS7.x to TS9.x 
+            # There is no valid gw partition, we try to boot from prvious flash bank
+            cur_bank=`/usr/sbin/getenv ACTIMAGE`
+            echo "The gw partition is invalid and prvious bank is TS7.x, we try to boot from prvious flash bank"
+            if [ $cur_bank -eq 1 ]; then 
+               /usr/sbin/setenv ACTIMAGE 2
+               /sbin/reboot
+            else
+               if [ $cur_bank -eq 2 ]; then
+                  /usr/sbin/setenv ACTIMAGE 1 
+                  /sbin/reboot
+               else
+                  echo "Invalid ACTIMAGE environment variable number : $cur_bank"  
+               fi
+            fi
+        fi
+    fi
+
+    # Make a common /etc, do not make it RO here, since we still want to create /etc/profile below
+    mount $fss_root/etc /etc
+    # Create a profile for subsequent shells
+    # PATH for executables
+    echo "export PATH=$PATH" >> /etc/profile
+    # Search path for shared libraries
+    echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> /etc/profile
+    # Root directory of separate file systems
+    echo "export CONFIG_TI_SEPARATE_FS_ROOT_NAME=$CONFIG_TI_SEPARATE_FS_ROOT_NAME" >> /etc/profile
+    # Let each FS init itself
+    fss=`ls $fss_root | grep -v etc`
+    for curr_fs in $fss ; do
+        if [ -e "$fss_root/$curr_fs/etc/init.d/rcS" ]; then
+            #echo Executing: $fss_root/$curr_fs/etc/init.d/rcS
+            # source each components rcS, so it stays in the same context
+            . $fss_root/$curr_fs/etc/init.d/rcS
+        fi
+    done
+    # Done with writing to /etc, now make it RO
+    mount -o remount -r /etc
+# ARRIS ADD : end check for arris nvm esafe init flag
+            else
+                echo "Init eSAFEs flag is disabled.  Skipping Intel eSAFE loader..."
+            fi
+        else
+            echo "usr/sbin/nvread not found!  Skipping Intel eSAFE loader..."
+        fi
+    else
+        echo "Running Sercomm GW.  Skipping Intel eSAFE loader..."
+    fi
+fi
+# END ARRIS ADD
+fi
+
+# Run the profile to get everything into this current shell, which eventually runs everything
+if [ -e /etc/profile ]; then
+    . /etc/profile
+fi
+
+if [ -e "/lib/modules/2.6.39.3/kernel/drivers/usb/gadget/g_ether.ko" ]; then
+    insmod /lib/modules/2.6.39.3/kernel/drivers/usb/gadget/g_ether.ko
+fi
+
+
+# Setup hostname
+echo "ARRIS DOCSIS 3.0 - PacketCable 1.5 Touchstone Telephony Gateway" > /proc/sys/kernel/hostname
+
+# ARRIS CHANGE - change startup banner
+echo ""
+echo "========================================================"
+echo "ARRIS Touchstone Docsis 3.0 Firmware"
+echo "Firmware Revision "9.1.103DR1""
+echo "Build VGWSDK Base Release 4.5.211.40"
+echo "Build date: Wednesday, April 24 2019, 17:11:02"
+echo "Copyright (c) 2007 - 2014 ARRIS Group Inc."
+echo "========================================================"
+echo ""
+# END ARRIS CHANGE
+
+if test -f /nvram/0/sys_setup.sh
+then
+    # Start alternative system start up
+    source /nvram/0/sys_setup.sh
+else
+    # Start default system start up
+    # Disable low priority prints from the Kernel
+# ARRIS let kernel init to desired level
+#    echo 5 > /proc/sys/kernel/printk
+
+    # Setup IPv6 default parameters
+    echo 0 > /proc/sys/net/ipv6/conf/default/autoconf
+    echo 0 > /proc/sys/net/ipv6/conf/default/dad_transmits
+    echo 0 > /proc/sys/net/ipv6/conf/default/accept_ra
+    echo 0 > /proc/sys/net/ipv6/conf/default/accept_redirects
+    echo 0 > /proc/sys/net/ipv6/conf/default/router_solicitations
+
+    # Start ICC service
+    if test -f /usr/sbin/iccctl
+    then
+        /usr/sbin/iccctl start
+    fi
+
+    # init common_components
+    if test -f /usr/sbin/cc_init_once
+    then
+        /usr/sbin/cc_init_once
+    fi
+fi
+
+# Validity checks - Automatically find and run all check files
+check_files=`ls -1 /etc/scripts/*_check.sh` 2> /dev/null
+
+# Run all check scripts in /etc/init.d/scripts.
+# The rcS will monitor the return values of the check scripts,
+# Where 0 is ok, 1 to run CLI and reboot, 2 to reboot only.
+for curfile in $check_files
+do
+    # ARRIS ADD
+    echo Running $curfile...
+    # END ARRIS ADD
+
+    $curfile
+
+    # ARRIS CHANGE - Change option 1 to testmode
+    # Test return values
+    case $? in
+        "1") /usr/sbin/testmode;;
+        "2") reboot;;
+    esac
+    # END ARRIS CHANGE
+done
+
+# ARRIS CHANGE - Default to testmode if the check scripts don't init things for some reason.
+#                Rewrite this last portion of the script to correct no-boot problem with the newer kernel.
+#                Testmode must be run in the background, while regular startup must take place in the foreground.
+# Start up
+if test -f /usr/sbin/nvread
+then
+    enable_startup=1;
+    if [ $enable_startup -ne 0 ]; then \
+        startup_file="/etc/scripts/sys_startup.sh"; 
+        echo ----------------------------------------------------------
+        echo Enable_Startup = $enable_startup
+        echo Startup_File = $startup_file
+        echo ----------------------------------------------------------
+if [ -z $startup_file ]; then
+            /usr/sbin/testmode &
+else
+    # Run the startup file (full path)
+    $startup_file
+fi
+    else    
+        /usr/sbin/testmode &
+    fi
+else
+    /usr/sbin/testmode &
+fi
+# END ARRIS CHANGE
+
